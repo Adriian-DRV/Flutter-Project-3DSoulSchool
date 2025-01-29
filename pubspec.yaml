@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  mongo_dart: ^0.10.4 #Dependencia para la conexión con la base de datos de MongoDB
 
 dev_dependencies:
   flutter_test:

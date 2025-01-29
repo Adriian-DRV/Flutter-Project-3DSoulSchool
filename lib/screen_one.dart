@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:navegacion_carpetas/database_service.dart'; // Importamos el archivo database_service.dart
 import 'package:navegacion_carpetas/screen_two.dart'; // Importamos la clase de la pantalla 2
-
-/*void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
-      home: ScreenOne(), // Pantalla inicial
-    );
-  }
-}*/
 
 class ScreenOne extends StatelessWidget {
   // Constructor de la clase ScreenOne
@@ -29,59 +14,67 @@ class ScreenOne extends StatelessWidget {
   Widget build(BuildContext context) {
     Color _myColor = Colors.blue;
     Color _secondaryColor = Colors.red;
-    
+
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
-      home: Scaffold(
-      appBar: AppBar(
-        title: const Text("PANTALLA 1"),
-        backgroundColor: _secondaryColor,
-      ),
-      backgroundColor: _myColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Contraseña:",
-              style: TextStyle(fontSize: 20),
+        debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Text("PANTALLA 1"),
+            backgroundColor: _secondaryColor,
+          ),
+          backgroundColor: _myColor,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Contraseña:",
+                  style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(
+                    height: 20), // Espacio entre el texto y el TextField
+                TextField(
+                  controller: _controllerPasswd,
+                  obscureText:
+                      true, // Ocultamos el texto de contraseña para la prueba
+                  decoration: const InputDecoration(
+                    labelText: "Introduce una contraseña",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 50),
+                ElevatedButton(
+                  onPressed: () {
+                    // Llamar a la función de guardar contraseña y navegar a la siguiente pantalla
+                    _savePasswd(context);
+                  },
+                  child: const Text("SIGUIENTE PANTALLA"),
+                ),
+              ],
             ),
-            const SizedBox(height: 20), // Espacio entre el texto y el TextField
-            TextField(
-              controller: _controllerPasswd, 
-              obscureText: false, // No Ocultamos el texto de contraseña para la prueba
-              decoration: const InputDecoration(
-                labelText: "Introduce una contraseña",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: () {
-                // Llamar a la función siguientePantalla correctamente
-                siguientePantalla(context);
-              },
-              child: const Text("SIGUIENTE PANTALLA"),
-            ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 
-  // Método para navegar a la siguiente pantalla
-  void siguientePantalla(BuildContext context) {
-    if(_controllerPasswd.text == _password){
+  //Método para guardar la contraseña en la base de datos y navegar a la siguiente pantalla
+  void _savePasswd(BuildContext context) async {
+    final passwd = _controllerPasswd
+        .text; //La contraseña introducida por el usuario se guarda en una variable llamada passwd
+
+    if (passwd.isNotEmpty) {
+      //Si la contraseña no esta vacía
+      await DatabaseService.savePasswd(
+          passwd); //Se guarda la contraseña en la base de datos
+
+      //Navegamos a la siguiente pantalla
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ScreenTwo()),
       );
-    }else{
+    } else {
+      //Si la contraseña esta vacía
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Contraseña incorrecta"),
-          duration: Duration(seconds: 1), //Tiempo que estará el snackbar en pantalla si falla la contraseña
-        ),
+        const SnackBar(content: Text("Debes introducir una contraseña")),
       );
     }
   }
